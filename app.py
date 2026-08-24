@@ -2,6 +2,7 @@ import os
 import threading
 import json
 import sqlite3
+import gc
 from flask import Flask, jsonify, request, render_template
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
@@ -12,8 +13,10 @@ from guardrail import GuardrailWrapper
 from dataset_generator import save_datasets, generate_local_datasets
 from security_features import extract_document_text, scan_document, scan_private_data
 
+# Memory optimization for free tier
+gc.set_threshold(100, 10, 10)
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# Render provides persistent disk at /opt/render/project/src/data
 DATA_DIR = os.getenv("DATA_DIR", os.path.join(BASE_DIR, "data"))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 

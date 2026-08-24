@@ -4,35 +4,31 @@ services:
     env: python
     plan: free
     buildCommand: |
-      pip install --upgrade pip
-      pip install -r requirements.txt
+      pip install --upgrade pip --no-cache-dir
+      pip install -r requirements.txt --no-cache-dir
+      # Pre-download HF models to cache (avoids runtime download)
+      python -c "
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from sentence_transformers import SentenceTransformer
+import torch
+print('Pre-downloading models...')
+AutoTokenizer.from_pretrained('fmops/distilbert-prompt-injection')
+AutoModelForSequenceClassification.from_pretrained('fmops/distilbert-prompt-injection')
+SentenceTransformer('all-MiniLM-L6-v2')
+from transformers import AutoTokenizer as AT2, AutoModelForSequenceClassification as AM2
+AT2.from_pretrained('cross-encoder/nli-deberta-v3-xsmall')
+AM2.from_pretrained('cross-encoder/nli-deberta-v3-xsmall')
+print('Models cached.')
+"
     startCommand: python app.py
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.9
       - key: FLASK_DEBUG
         value: "false"
-    # Persistent disk for SQLite + downloaded models
+      - key: DATA_DIR
+        value: /opt/render/project/src/data
+      - key: PYTHONUNBUFFERED
+        value: "1"
     disk:
       name: data-disk
       mountPath: /opt/render/project/src/data
       sizeGB: 1
-
-  # Optional: separate background worker for training (free tier allows 1 web + 1 worker)
-  - type: worker
-    name: training-worker
-    env: python
-    plan: free
-    buildCommand: |
-      pip install --upgrade pip
-      pip install -r requirements.txt
-    startCommand: python -c "
-import os
-os.makedirs('data', exist_ok=True)
-os.makedirs('models', exist_ok=True)
-print('Worker ready - training triggered via web service')
-# In production, use a task queue (Redis/RQ) to trigger train_model()
-"
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.9
