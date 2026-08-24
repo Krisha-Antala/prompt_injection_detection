@@ -295,14 +295,15 @@
                     </div>
                 </div>
 
-                <div class="grid-layout mt-2">
-                    <!-- Left: Synthetic Expansion -->
+                <div class="mt-2" style="max-width: 720px; margin-left: auto; margin-right: auto;">
+                    <!-- Synthetic Expansion (Fine-tuning removed for serverless) -->
                     <div class="glass-card">
                         <div class="card-header">
                             <div class="card-title">
                                 <i class="fa-solid fa-plus-minus text-teal"></i>
                                 <h3>Dataset Expansion Engine</h3>
                             </div>
+                            <span class="shield-badge badge-teal">Live</span>
                         </div>
                         
                         <div class="card-body">
@@ -323,37 +324,7 @@
                                 <span class="spinner-inline hidden" id="spinner-expand"><i class="fa-solid fa-circle-notch fa-spin"></i></span>
                                 <i class="fa-solid fa-arrows-spin"></i> Trigger Synthetic Generation
                             </button>
-                        </div>
-                    </div>
-
-                    <!-- Right: Active Local Training -->
-                    <div class="glass-card">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <i class="fa-solid fa-gear text-orange"></i>
-                                <h3>Fine-Tune Custom Model</h3>
-                            </div>
-                        </div>
-                        
-                        <div class="card-body">
-                            <p class="body-desc">
-                                Re-train the local DistilBERT prompt injection model using the expanded datasets. This runs a PyTorch training loop on your machine in the background, updating target weights and refreshing the active guardrail.
-                            </p>
-                            
-                            <div class="training-prog-box mt-1">
-                                <div class="prog-header">
-                                    <span class="prog-title">Training Progress</span>
-                                    <span id="training-progress-lbl" class="prog-val">Idle</span>
-                                </div>
-                                <div class="prog-bar-container">
-                                    <div id="training-progress-bar" class="prog-bar" style="width: 0%;"></div>
-                                </div>
-                            </div>
-                            
-                            <button id="btn-train-model" class="btn btn-primary mt-1">
-                                <span class="spinner-inline hidden" id="spinner-train"><i class="fa-solid fa-circle-notch fa-spin"></i></span>
-                                <i class="fa-solid fa-graduation-cap"></i> Run Model Fine-Tuning
-                            </button>
+                            <p style="color:var(--text-dim);font-size:0.78rem;margin-top:0.6rem;"><i class="fa-solid fa-circle-info"></i> Fine-tuning requires local PyTorch & GPU — run <code>python train.py</code> locally. The deployed model uses heuristic + live LLM checks.</p>
                         </div>
                     </div>
                 </div>

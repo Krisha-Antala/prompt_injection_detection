@@ -690,28 +690,30 @@ function initDatasetPanel() {
         }
     });
     
-    // Model Fine-Tuning
-    btnTrain.addEventListener("click", async () => {
-        spinnerTrain.classList.remove("hidden");
-        btnTrain.disabled = true;
-        
-        appendConsole("Starting background model training pipeline...", "info");
-        
-        try {
-            const response = await fetch("/api/model/train", { method: "POST" });
-            const data = await response.json();
+    // Model Fine-Tuning (removed for serverless - local only)
+    if (btnTrain && spinnerTrain) {
+        btnTrain.addEventListener("click", async () => {
+            spinnerTrain.classList.remove("hidden");
+            btnTrain.disabled = true;
             
-            appendConsole(data.message, "info");
+            appendConsole("Starting background model training pipeline...", "info");
             
-            // Start polling status
-            startTrainingStatusPoll();
-            
-        } catch (err) {
-            appendConsole(`Failed to initialize training thread: ${err}`, "warn");
-            spinnerTrain.classList.add("hidden");
-            btnTrain.disabled = false;
-        }
-    });
+            try {
+                const response = await fetch("/api/model/train", { method: "POST" });
+                const data = await response.json();
+                
+                appendConsole(data.message, "info");
+                
+                // Start polling status
+                startTrainingStatusPoll();
+                
+            } catch (err) {
+                appendConsole(`Failed to initialize training thread: ${err}`, "warn");
+                spinnerTrain.classList.add("hidden");
+                btnTrain.disabled = false;
+            }
+        });
+    }
 }
 
 function startTrainingStatusPoll() {
@@ -720,6 +722,7 @@ function startTrainingStatusPoll() {
     const progressBar = document.getElementById("training-progress-bar");
     const progressLbl = document.getElementById("training-progress-lbl");
     const consoleBody = document.getElementById("training-console");
+    if (!btnTrain || !progressBar || !progressLbl) return;
     
     const appendConsole = (text, type = "info") => {
         const time = new Date().toLocaleTimeString();
