@@ -261,39 +261,48 @@ function initPlayground() {
             
             document.getElementById("hal-score-val").textContent = `${scorePct}%`;
             
-            // Display NLI details
-            if (data.nli_results) {
-                document.getElementById("hal-nli").innerHTML = `Class: <span class="text-mono font-bold">${data.nli_results.nli_label}</span> (${Math.round(data.nli_results.confidence * 100)}%)`;
+            // Display NLI details (handle both local NLI and LLM fallback)
+            const nliEl = document.getElementById("hal-nli");
+            if (data.nli_results && data.nli_results.nli_label) {
+                nliEl.innerHTML = `Class: <span class="text-mono font-bold">${data.nli_results.nli_label}</span> (${Math.round(data.nli_results.confidence * 100)}%)`;
+            } else if (data.method && data.method.startsWith("llm-")) {
+                nliEl.innerHTML = `LLM Check (<span class="text-mono">${data.method}</span>): ${data.reason ? data.reason : (data.hallucination_detected ? "Unsupported facts detected" : "Fully grounded")}`;
             } else {
-                document.getElementById("hal-nli").textContent = "NLI Classifier Unloaded";
+                nliEl.textContent = "Consistency: " + (data.hallucination_detected ? "Hallucination risk" : "Grounded");
             }
             
-            // Sentence details
+            // Sentence details (only for local embedding mode; hide for LLM mode)
             const emb = data.embedding_results;
-            document.getElementById("hal-matched-sents").textContent = `${emb.total_sentences - emb.hallucinated_sentences_count} / ${emb.total_sentences} sentence(s)`;
-            
-            // Populate list
             const list = document.getElementById("sentence-analysis-list");
+            const matchedEl = document.getElementById("hal-matched-sents");
             list.innerHTML = "";
             
-            emb.sentence_details.forEach(sent => {
-                const item = document.createElement("div");
-                item.className = `sentence-item ${sent.is_hallucination ? 'hallucinated' : 'grounded'}`;
-                
-                item.innerHTML = `
-                    <div class="sent-text">"${sent.sentence}"</div>
-                    <div class="sent-match"><i class="fa-solid fa-link"></i> Best Match: "${sent.best_match}"</div>
-                    <div class="sent-badge-row">
-                        <span class="shield-badge ${sent.is_hallucination ? 'badge-purple' : 'badge-blue'}">${sent.is_hallucination ? 'Hallucinated' : 'Aligned'}</span>
-                        <span class="sent-score ${sent.is_hallucination ? 'text-purple' : 'text-blue'}">Similarity: ${Math.round(sent.max_similarity * 100)}%</span>
-                    </div>
-                `;
-                list.appendChild(item);
-            });
+            if (emb && emb.sentence_details && Array.isArray(emb.sentence_details)) {
+                matchedEl.textContent = `${emb.total_sentences - emb.hallucinated_sentences_count} / ${emb.total_sentences} sentence(s)`;
+                emb.sentence_details.forEach(sent => {
+                    const item = document.createElement("div");
+                    item.className = `sentence-item ${sent.is_hallucination ? 'hallucinated' : 'grounded'}`;
+                    item.innerHTML = `
+                        <div class="sent-text">"${sent.sentence}"</div>
+                        <div class="sent-match"><i class="fa-solid fa-link"></i> Best Match: "${sent.best_match}"</div>
+                        <div class="sent-badge-row">
+                            <span class="shield-badge ${sent.is_hallucination ? 'badge-purple' : 'badge-blue'}">${sent.is_hallucination ? 'Hallucinated' : 'Aligned'}</span>
+                            <span class="sent-score ${sent.is_hallucination ? 'text-purple' : 'text-blue'}">Similarity: ${Math.round(sent.max_similarity * 100)}%</span>
+                        </div>
+                    `;
+                    list.appendChild(item);
+                });
+            } else if (data.method && data.method.startsWith("llm-")) {
+                matchedEl.textContent = data.hallucination_detected ? "LLM flagged unsupported content" : "LLM verified grounded";
+            } else {
+                matchedEl.textContent = data.embedding_results && data.embedding_results.details ? data.embedding_results.details : "—";
+            }
             
         } catch (err) {
             console.error(err);
-            alert("Error running consistency analysis.");
+            // Non-intrusive error: show in the results area instead of popup
+            const nliEl = document.getElementById("hal-nli");
+            if (nliEl) nliEl.textContent = "Analysis failed: " + (err.message || "Network error");
         } finally {
             spinnerHal.classList.add("hidden");
             btnScanHal.disabled = false;
