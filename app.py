@@ -13,14 +13,17 @@ from dataset_generator import save_datasets, generate_local_datasets
 from security_features import extract_document_text, scan_document, scan_private_data
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Render provides persistent disk at /opt/render/project/src/data
+DATA_DIR = os.getenv("DATA_DIR", os.path.join(BASE_DIR, "data"))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
-AUDIT_DB = os.path.join(BASE_DIR, "data", "audit.db")
+AUDIT_DB = os.path.join(DATA_DIR, "audit.db")
+CUSTOM_MODEL_PATH = os.path.join(DATA_DIR, "models", "injection_detector")
 
 
 def record_audit(event_type, payload, result):
-    os.makedirs(os.path.dirname(AUDIT_DB), exist_ok=True)
+    os.makedirs(DATA_DIR, exist_ok=True)
     with sqlite3.connect(AUDIT_DB) as db:
         db.execute("CREATE TABLE IF NOT EXISTS audit (id INTEGER PRIMARY KEY AUTOINCREMENT, created_at TEXT DEFAULT CURRENT_TIMESTAMP, event_type TEXT NOT NULL, payload TEXT NOT NULL, result TEXT NOT NULL)")
         db.execute("INSERT INTO audit(event_type, payload, result) VALUES (?, ?, ?)", (event_type, json.dumps(payload), json.dumps(result)))
@@ -91,7 +94,6 @@ def audit_logs():
 
 # Initialize detectors ONCE and share them between app endpoints and the guardrail.
 # This avoids loading the same transformer models twice (~saves 500MB+ RAM and startup time).
-CUSTOM_MODEL_PATH = os.path.join(BASE_DIR, "models", "injection_detector")
 injection_detector = PromptInjectionDetector(CUSTOM_MODEL_PATH)
 guardrail = GuardrailWrapper(injection_detector=injection_detector)
 hallucination_detector = None  # created lazily on first hallucination request
@@ -183,9 +185,8 @@ def guardrail_chat():
 
 @app.route("/api/dataset/stats", methods=["GET"])
 def dataset_stats():
-    data_dir = os.path.join(BASE_DIR, "data")
-    inj_file = os.path.join(data_dir, "injections.json")
-    hal_file = os.path.join(data_dir, "hallucinations.json")
+    inj_file = os.path.join(DATA_DIR, "injections.json")
+    hal_file = os.path.join(DATA_DIR, "hallucinations.json")
     
     stats = {
         "injections_count": 0,
@@ -208,9 +209,8 @@ def expand_dataset():
     num_samples = data.get("num_samples", 20)
     
     try:
-        data_path = os.path.join(BASE_DIR, "data")
         # Save baseline or trigger generation
-        save_datasets(data_path)
+        save_datasets(DATA_DIR)
         
         # Load and verify counts
         stats = {
@@ -218,9 +218,9 @@ def expand_dataset():
             "injections_count": 0,
             "hallucinations_count": 0
         }
-        with open(os.path.join(data_path, "injections.json"), "r") as f:
+        with open(os.path.join(DATA_DIR, "injections.json"), "r") as f:
             stats["injections_count"] = len(json.load(f))
-        with open(os.path.join(data_path, "hallucinations.json"), "r") as f:
+        with open(os.path.join(DATA_DIR, "hallucinations.json"), "r") as f:
             stats["hallucinations_count"] = len(json.load(f))
             
         return jsonify(stats)
@@ -253,15 +253,16 @@ def training_status_endpoint():
 
 if __name__ == "__main__":
     # Ensure standard directory setup
-    data_dir = os.path.join(BASE_DIR, "data")
-    os.makedirs(data_dir, exist_ok=True)
+    os.makedirs(DATA_DIR, exist_ok=True)
+    os.makedirs(os.path.join(DATA_DIR, "models"), exist_ok=True)
     
     # Load or generate baseline datasets if missing
-    if not os.path.exists(os.path.join(data_dir, "injections.json")):
+    if not os.path.exists(os.path.join(DATA_DIR, "injections.json")):
         print("Generating baseline seed datasets...")
-        save_datasets(data_dir)
+        save_datasets(DATA_DIR)
         
-    # Start server (debug mode only when explicitly enabled via .env: FLASK_DEBUG=true)
+    # Render provides PORT env var; default 5000 for local
+    port = int(os.getenv("PORT", 5000))
     debug_mode = os.getenv("FLASK_DEBUG", "false").strip().lower() == "true"
-    print("Launching Flask Server on http://127.0.0.1:5000")
-    app.run(host="127.0.0.1", port=5000, debug=debug_mode)
+    print(f"Launching Flask Server on http://0.0.0.0:{port}")
+    app.run(host="0.0.0.0", port=port, debug=debug_mode)
