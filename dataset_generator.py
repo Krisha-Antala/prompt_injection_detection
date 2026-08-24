@@ -320,6 +320,17 @@ def save_datasets(dest_dir="data", num_samples=None):
     inj_path = os.path.join(dest_dir, "injections.json")
     hal_path = os.path.join(dest_dir, "hallucinations.json")
 
+    # On serverless, dest_dir is /tmp (empty on cold start) but bundled data lives in ./data
+    # Seed the writable dir from bundled files so totals start from 141/110 and grow.
+    try:
+        bundled_dir = os.path.join(os.path.dirname(__file__), "data")
+        if not os.path.exists(inj_path) and os.path.exists(os.path.join(bundled_dir, "injections.json")):
+            import shutil
+            shutil.copy(os.path.join(bundled_dir, "injections.json"), inj_path)
+            shutil.copy(os.path.join(bundled_dir, "hallucinations.json"), hal_path)
+    except Exception:
+        pass
+
     # If expanding an existing dataset, append new synthetic samples so totals grow
     if num_samples is not None and os.path.exists(inj_path) and os.path.exists(hal_path):
         try:
