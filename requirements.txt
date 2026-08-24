@@ -1,12 +1,5 @@
 Flask
-langchain
-langchain-openai
-transformers
-torch
-numpy
-python-dotenv
-scikit-learn
 requests
-sentence-transformers
+python-dotenv
 pypdf
 python-docx

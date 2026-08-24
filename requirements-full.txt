@@ -1,0 +1,11 @@
+Flask
+transformers
+torch
+numpy
+python-dotenv
+scikit-learn
+requests
+sentence-transformers
+pypdf
+python-docx
+gunicorn

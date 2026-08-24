@@ -1,16 +1,31 @@
 import os
 import re
-import torch
-from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
-from sentence_transformers import SentenceTransformer, util
 
-# Cap torch CPU threads: letting torch use every core causes massive
-# thread-thrashing on small machines (multi-second inference for tiny models).
-torch.set_num_threads(max(1, (os.cpu_count() or 4) // 2))
+# Heavy ML dependencies are optional: on serverless platforms (Vercel etc.)
+# only the lightweight regex/heuristic layer is deployed.
+try:
+    import torch
+    from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
+    TRANSFORMERS_AVAILABLE = True
+except ImportError:
+    torch = None
+    TRANSFORMERS_AVAILABLE = False
+
+try:
+    from sentence_transformers import SentenceTransformer, util
+    ST_AVAILABLE = True
+except ImportError:
+    SentenceTransformer = None
+    util = None
+    ST_AVAILABLE = False
+
+if TRANSFORMERS_AVAILABLE:
+    # Cap torch CPU threads: prevents thread-thrashing on small machines
+    torch.set_num_threads(max(1, (os.cpu_count() or 4) // 2))
 
 # Check for GPU
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-print(f"Using device: {DEVICE} (torch threads: {torch.get_num_threads()})")
+DEVICE = "cuda" if (TRANSFORMERS_AVAILABLE and torch.cuda.is_available()) else "cpu"
+print(f"Using device: {DEVICE} (ml_available={TRANSFORMERS_AVAILABLE})")
 
 # Heuristic regex patterns for quick prompt injection & cyber attack detection
 HEURISTIC_PATTERNS = [
@@ -62,24 +77,28 @@ class PromptInjectionDetector:
         self.classifier = None
         
         # Determine model source
-        if model_path and os.path.exists(model_path):
+        if not TRANSFORMERS_AVAILABLE:
+            self.model_name = None
+            print("transformers not installed - heuristic-only detection active.")
+        elif model_path and os.path.exists(model_path):
             self.model_name = model_path
             print(f"Loading custom fine-tuned prompt injection model from {model_path}...")
         else:
             self.model_name = "fmops/distilbert-prompt-injection"
             print(f"No custom model found at '{model_path}'. Using pre-trained model: {self.model_name}...")
             
-        try:
-            self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-            self.model = AutoModelForSequenceClassification.from_pretrained(self.model_name)
-            self.classifier = pipeline(
-                "text-classification", 
-                model=self.model, 
-                tokenizer=self.tokenizer, 
-                device=0 if DEVICE == "cuda" else -1
-            )
-        except Exception as e:
-            print(f"Failed to load transformer model '{self.model_name}': {e}. Heuristics only will be active.")
+        if TRANSFORMERS_AVAILABLE and self.model_name:
+            try:
+                self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+                self.model = AutoModelForSequenceClassification.from_pretrained(self.model_name)
+                self.classifier = pipeline(
+                    "text-classification", 
+                    model=self.model, 
+                    tokenizer=self.tokenizer, 
+                    device=0 if DEVICE == "cuda" else -1
+                )
+            except Exception as e:
+                print(f"Failed to load transformer model '{self.model_name}': {e}. Heuristics only will be active.")
             
     def check_heuristics(self, text):
         """
@@ -145,30 +164,37 @@ class HallucinationDetector:
     def __init__(self, nli_model_name="cross-encoder/nli-deberta-v3-xsmall", emb_model_name="all-MiniLM-L6-v2"):
         """
         Initializes NLI and embedding-based hallucination detectors.
+        Degrades gracefully when ML libraries are unavailable (serverless).
         """
         self.nli_pipeline = None
         self.emb_model = None
         
+        if not (TRANSFORMERS_AVAILABLE or ST_AVAILABLE):
+            print("ML libraries unavailable - hallucination detection disabled (fail-open).")
+            return
+
         # Load NLI model (Natural Language Inference)
-        try:
-            print(f"Loading NLI cross-encoder model: {nli_model_name}...")
-            self.nli_tokenizer = AutoTokenizer.from_pretrained(nli_model_name)
-            self.nli_model = AutoModelForSequenceClassification.from_pretrained(nli_model_name)
-            self.nli_pipeline = pipeline(
-                "text-classification",
-                model=self.nli_model,
-                tokenizer=self.nli_tokenizer,
-                device=0 if DEVICE == "cuda" else -1
-            )
-        except Exception as e:
-            print(f"Failed to load NLI cross-encoder: {e}. Falling back to embedding model.")
+        if TRANSFORMERS_AVAILABLE:
+            try:
+                print(f"Loading NLI cross-encoder model: {nli_model_name}...")
+                self.nli_tokenizer = AutoTokenizer.from_pretrained(nli_model_name)
+                self.nli_model = AutoModelForSequenceClassification.from_pretrained(nli_model_name)
+                self.nli_pipeline = pipeline(
+                    "text-classification",
+                    model=self.nli_model,
+                    tokenizer=self.nli_tokenizer,
+                    device=0 if DEVICE == "cuda" else -1
+                )
+            except Exception as e:
+                print(f"Failed to load NLI cross-encoder: {e}. Falling back to embedding model.")
             
         # Load embedding model (for sentence-level similarity checking)
-        try:
-            print(f"Loading SentenceTransformer: {emb_model_name}...")
-            self.emb_model = SentenceTransformer(emb_model_name, device=DEVICE)
-        except Exception as e:
-            print(f"Failed to load embedding model: {e}")
+        if ST_AVAILABLE:
+            try:
+                print(f"Loading SentenceTransformer: {emb_model_name}...")
+                self.emb_model = SentenceTransformer(emb_model_name, device=DEVICE)
+            except Exception as e:
+                print(f"Failed to load embedding model: {e}")
             
     def detect_nli(self, context, response):
         """
@@ -215,10 +241,11 @@ class HallucinationDetector:
         If a response sentence has low similarity (< threshold) to all context sentences, it is marked as a hallucination.
         """
         if not self.emb_model:
+            # Fail-open: unavailable detector must not block valid responses
             return {
-                "grounding_score": 0.0,
-                "is_hallucination": True,
-                "details": "Embedding model not loaded."
+                "grounding_score": 1.0,
+                "is_hallucination": False,
+                "details": "Embedding model not loaded (fail-open)."
             }
             
         # Split sentences
@@ -275,7 +302,17 @@ class HallucinationDetector:
     def predict(self, context, response, threshold=0.55):
         """
         Dual-method prediction combining NLI and Embeddings for robust check.
+        Fail-open when no ML models are available (serverless deployments).
         """
+        if self.nli_pipeline is None and self.emb_model is None:
+            return {
+                "hallucination_detected": False,
+                "grounding_score": 1.0,
+                "nli_results": None,
+                "embedding_results": {"details": "ML models unavailable on this deployment"},
+                "method": "unavailable"
+            }
+
         # Run NLI
         nli_res = self.detect_nli(context, response)
         

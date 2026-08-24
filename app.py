@@ -3,12 +3,13 @@ import threading
 import json
 import sqlite3
 import gc
+import tempfile
 from flask import Flask, jsonify, request, render_template
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 
 # Import our custom components
-from detector import PromptInjectionDetector, HallucinationDetector
+from detector import PromptInjectionDetector, HallucinationDetector, TRANSFORMERS_AVAILABLE
 from guardrail import GuardrailWrapper
 from dataset_generator import save_datasets, generate_local_datasets
 from security_features import extract_document_text, scan_document, scan_private_data
@@ -17,8 +18,26 @@ from security_features import extract_document_text, scan_document, scan_private
 gc.set_threshold(100, 10, 10)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.getenv("DATA_DIR", os.path.join(BASE_DIR, "data"))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
+
+
+def _ensure_writable_data_dir():
+    """Serverless filesystems (/var/task) are read-only: fall back to /tmp."""
+    preferred = os.getenv("DATA_DIR", os.path.join(BASE_DIR, "data"))
+    try:
+        os.makedirs(preferred, exist_ok=True)
+        probe = os.path.join(preferred, ".wtest")
+        with open(probe, "w") as f:
+            f.write("ok")
+        os.remove(probe)
+        return preferred
+    except Exception:
+        alt = os.path.join(tempfile.gettempdir(), "pid_data")
+        os.makedirs(alt, exist_ok=True)
+        return alt
+
+
+DATA_DIR = _ensure_writable_data_dir()
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 AUDIT_DB = os.path.join(DATA_DIR, "audit.db")
@@ -26,10 +45,14 @@ CUSTOM_MODEL_PATH = os.path.join(DATA_DIR, "models", "injection_detector")
 
 
 def record_audit(event_type, payload, result):
-    os.makedirs(DATA_DIR, exist_ok=True)
-    with sqlite3.connect(AUDIT_DB) as db:
-        db.execute("CREATE TABLE IF NOT EXISTS audit (id INTEGER PRIMARY KEY AUTOINCREMENT, created_at TEXT DEFAULT CURRENT_TIMESTAMP, event_type TEXT NOT NULL, payload TEXT NOT NULL, result TEXT NOT NULL)")
-        db.execute("INSERT INTO audit(event_type, payload, result) VALUES (?, ?, ?)", (event_type, json.dumps(payload), json.dumps(result)))
+    try:
+        os.makedirs(DATA_DIR, exist_ok=True)
+        with sqlite3.connect(AUDIT_DB) as db:
+            db.execute("CREATE TABLE IF NOT EXISTS audit (id INTEGER PRIMARY KEY AUTOINCREMENT, created_at TEXT DEFAULT CURRENT_TIMESTAMP, event_type TEXT NOT NULL, payload TEXT NOT NULL, result TEXT NOT NULL)")
+            db.execute("INSERT INTO audit(event_type, payload, result) VALUES (?, ?, ?)", (event_type, json.dumps(payload), json.dumps(result)))
+    except Exception as e:
+        # Audit logging must never break a live request (read-only FS on serverless)
+        print(f"[audit] skipped: {e}")
 
 
 @app.route("/api/security/scan", methods=["POST"])
@@ -233,6 +256,12 @@ def expand_dataset():
 @app.route("/api/model/train", methods=["POST"])
 def trigger_training():
     global training_status, training_error
+    
+    if not TRANSFORMERS_AVAILABLE:
+        return jsonify({
+            "status": "unsupported",
+            "message": "Model training requires PyTorch, which is not available on this serverless deployment. Run training locally or on a full deployment."
+        }), 501
     
     if training_status == "training":
         return jsonify({"status": "already_running", "message": "Training is already in progress."})

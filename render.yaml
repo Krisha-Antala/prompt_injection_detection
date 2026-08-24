@@ -5,21 +5,7 @@ services:
     plan: free
     buildCommand: |
       pip install --upgrade pip --no-cache-dir
-      pip install -r requirements.txt --no-cache-dir
-      # Pre-download HF models to cache (avoids runtime download)
-      python -c "
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
-from sentence_transformers import SentenceTransformer
-import torch
-print('Pre-downloading models...')
-AutoTokenizer.from_pretrained('fmops/distilbert-prompt-injection')
-AutoModelForSequenceClassification.from_pretrained('fmops/distilbert-prompt-injection')
-SentenceTransformer('all-MiniLM-L6-v2')
-from transformers import AutoTokenizer as AT2, AutoModelForSequenceClassification as AM2
-AT2.from_pretrained('cross-encoder/nli-deberta-v3-xsmall')
-AM2.from_pretrained('cross-encoder/nli-deberta-v3-xsmall')
-print('Models cached.')
-"
+      pip install -r requirements-full.txt --no-cache-dir
     startCommand: python app.py
     envVars:
       - key: FLASK_DEBUG
