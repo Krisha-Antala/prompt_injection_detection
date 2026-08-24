@@ -214,22 +214,28 @@ def guardrail_chat():
 
 @app.route("/api/dataset/stats", methods=["GET"])
 def dataset_stats():
-    inj_file = os.path.join(DATA_DIR, "injections.json")
-    hal_file = os.path.join(DATA_DIR, "hallucinations.json")
+    # On serverless, DATA_DIR is /tmp (ephemeral) but bundled data lives in BASE_DIR/data
+    # Fallback to bundled files so the demo shows counts even before first expansion.
+    def count_json(primary, fallback):
+        for p in [primary, fallback]:
+            if os.path.exists(p):
+                try:
+                    with open(p, "r") as f:
+                        return len(json.load(f))
+                except Exception:
+                    continue
+        return 0
+
+    inj_primary = os.path.join(DATA_DIR, "injections.json")
+    hal_primary = os.path.join(DATA_DIR, "hallucinations.json")
+    inj_fallback = os.path.join(BASE_DIR, "data", "injections.json")
+    hal_fallback = os.path.join(BASE_DIR, "data", "hallucinations.json")
     
     stats = {
-        "injections_count": 0,
-        "hallucinations_count": 0,
+        "injections_count": count_json(inj_primary, inj_fallback),
+        "hallucinations_count": count_json(hal_primary, hal_fallback),
         "custom_model_exists": os.path.exists(CUSTOM_MODEL_PATH)
     }
-    
-    if os.path.exists(inj_file):
-        with open(inj_file, "r") as f:
-            stats["injections_count"] = len(json.load(f))
-    if os.path.exists(hal_file):
-        with open(hal_file, "r") as f:
-            stats["hallucinations_count"] = len(json.load(f))
-            
     return jsonify(stats)
 
 @app.route("/api/dataset/expand", methods=["POST"])
