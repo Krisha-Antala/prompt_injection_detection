@@ -115,13 +115,7 @@ def debug_env():
         v = os.getenv(k, "")
         if not v or v.startswith("YOUR_"): return "missing"
         return f"set(len={len(v)})"
-    # Try a tiny provider call to see live errors (single fast probe to avoid timeout)
-    probe = {}
-    try:
-        txt, err = guardrail.query_groq("Reply with OK", None)
-        probe["groq"] = {"ok": bool(txt), "err": (err or "")[:120], "txt": (txt or "")[:60]}
-    except Exception as e:
-        probe["groq"] = {"ok": False, "err": str(e)[:120]}
+
     return jsonify({
         "raw_env": {k: check(k) for k in ["GEMINI_API_KEY", "GROQ_API_KEY", "OPENAI_API_KEY"]},
         "guardrail": {
@@ -130,8 +124,7 @@ def debug_env():
             "openai": "active" if guardrail.openai_key else "missing",
             "gemini_len": len(guardrail.gemini_key or ""),
             "groq_len": len(guardrail.groq_key or ""),
-        },
-        "probe": probe
+        }
     })
 
 @app.route("/api/audit/logs", methods=["GET"])
