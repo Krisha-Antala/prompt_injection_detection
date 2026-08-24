@@ -314,10 +314,35 @@ def generate_openai_synthetic_data(api_key, category="injection", num_samples=10
         return []
 
 
-def save_datasets(dest_dir="data"):
+def save_datasets(dest_dir="data", num_samples=None):
     os.makedirs(dest_dir, exist_ok=True)
-    
-    injections, hallucinations = generate_local_datasets()
+
+    inj_path = os.path.join(dest_dir, "injections.json")
+    hal_path = os.path.join(dest_dir, "hallucinations.json")
+
+    # If expanding an existing dataset, append new synthetic samples so totals grow
+    if num_samples is not None and os.path.exists(inj_path) and os.path.exists(hal_path):
+        try:
+            with open(inj_path, "r") as f:
+                injections = json.load(f)
+            with open(hal_path, "r") as f:
+                hallucinations = json.load(f)
+        except Exception:
+            injections, hallucinations = generate_local_datasets(num_samples=num_samples)
+        else:
+            # Generate a fresh batch and take only the synthetic tail (skip seeds to avoid duplication)
+            new_inj, new_hal = generate_local_datasets(num_samples=num_samples)
+            seed_inj_len = len(SEED_INJECTIONS) + len(SEED_SAFE_PROMPTS)
+            seed_hal_len = len(FACTUAL_CONTEXTS) * 2
+            # Take up to num_samples synthetic items beyond seeds
+            injections.extend(new_inj[seed_inj_len:seed_inj_len + num_samples])
+            hallucinations.extend(new_hal[seed_hal_len:seed_hal_len + num_samples])
+            # Safety: if slicing gave nothing (num_samples very small), just take head
+            if len(new_inj[seed_inj_len:seed_inj_len + num_samples]) == 0:
+                injections.extend(new_inj[:num_samples])
+                hallucinations.extend(new_hal[:num_samples])
+    else:
+        injections, hallucinations = generate_local_datasets(num_samples=num_samples) if num_samples else generate_local_datasets()
     
     # Check if OpenAI is available and configured for expansion
     api_key = os.getenv("OPENAI_API_KEY")

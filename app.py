@@ -241,11 +241,15 @@ def dataset_stats():
 @app.route("/api/dataset/expand", methods=["POST"])
 def expand_dataset():
     data = request.get_json() or {}
-    num_samples = data.get("num_samples", 20)
+    try:
+        num_samples = int(data.get("num_samples", 20))
+    except Exception:
+        num_samples = 20
+    num_samples = max(5, min(num_samples, 200))
     
     try:
-        # Save baseline or trigger generation
-        save_datasets(DATA_DIR)
+        # Generate/append synthetic samples - respects the selected count
+        save_datasets(DATA_DIR, num_samples=num_samples)
         
         # Load and verify counts
         stats = {
