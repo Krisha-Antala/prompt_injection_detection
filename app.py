@@ -108,6 +108,15 @@ def security_upload():
         return jsonify({"error": f"Could not read this document: {exc}"}), 400
 
 
+@app.route("/api/debug/env", methods=["GET"])
+def debug_env():
+    # Masked check - never returns actual key values
+    def check(k): 
+        v = os.getenv(k, "")
+        if not v or v.startswith("YOUR_"): return "missing"
+        return f"set(len={len(v)})"
+    return jsonify({k: check(k) for k in ["GEMINI_API_KEY", "GROQ_API_KEY", "OPENAI_API_KEY"]})
+
 @app.route("/api/audit/logs", methods=["GET"])
 def audit_logs():
     limit = min(max(request.args.get("limit", 50, type=int), 1), 200)
