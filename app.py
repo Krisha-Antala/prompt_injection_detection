@@ -115,18 +115,13 @@ def debug_env():
         v = os.getenv(k, "")
         if not v or v.startswith("YOUR_"): return "missing"
         return f"set(len={len(v)})"
-    # Try a tiny provider call to see live errors
+    # Try a tiny provider call to see live errors (single fast probe to avoid timeout)
     probe = {}
-    for name, fn in [
-        ("gemini", lambda: guardrail.query_gemini("Reply with OK", None)),
-        ("groq", lambda: guardrail.query_groq("Reply with OK", None)),
-        ("openai", lambda: guardrail.query_openai("Reply with OK", None)),
-    ]:
-        try:
-            txt, err = fn()
-            probe[name] = {"ok": bool(txt), "err": (err or "")[:120], "txt": (txt or "")[:80]}
-        except Exception as e:
-            probe[name] = {"ok": False, "err": str(e)[:120]}
+    try:
+        txt, err = guardrail.query_groq("Reply with OK", None)
+        probe["groq"] = {"ok": bool(txt), "err": (err or "")[:120], "txt": (txt or "")[:60]}
+    except Exception as e:
+        probe["groq"] = {"ok": False, "err": str(e)[:120]}
     return jsonify({
         "raw_env": {k: check(k) for k in ["GEMINI_API_KEY", "GROQ_API_KEY", "OPENAI_API_KEY"]},
         "guardrail": {
