@@ -1,0 +1,552 @@
+[
+  {
+    "context": "Water is a chemical compound consisting of two hydrogen atoms bonded to one oxygen atom. At sea level, it boils at 100 degrees Celsius (212 degrees Fahrenheit).",
+    "response": "Water consists of hydrogen and oxygen and boils at 100 degrees Celsius at sea level.",
+    "label": 1
+  },
+  {
+    "context": "Water is a chemical compound consisting of two hydrogen atoms bonded to one oxygen atom. At sea level, it boils at 100 degrees Celsius (212 degrees Fahrenheit).",
+    "response": "Oxygen gas consists of nitrogen and chlorine and does not boil at 200 degrees Celsius at sea level.",
+    "label": 0
+  },
+  {
+    "context": "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. Constructed in 1889, it was designed by engineer Gustave Eiffel.",
+    "response": "The Eiffel Tower was designed by Gustave Eiffel and built in Paris in 1889.",
+    "label": 1
+  },
+  {
+    "context": "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. Constructed in 1889, it was designed by engineer Gustave Eiffel.",
+    "response": "The Louvre Museum was designed by Albert Einstein and built in Berlin in 2001.",
+    "label": 0
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Acme Corp earned $12.5 million in revenue during the first quarter of 2024, showing an 8% quarterly growth.",
+    "label": 1
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Initech earned $125 million in revenue during the first quarter of 2024, showing an negative 5% quarterly growth.",
+    "label": 0
+  },
+  {
+    "context": "Photosynthesis is the process used by plants, algae and certain bacteria to harness energy from sunlight and turn it into chemical energy.",
+    "response": "Plants convert sunlight into chemical energy using the process of photosynthesis.",
+    "label": 1
+  },
+  {
+    "context": "Photosynthesis is the process used by plants, algae and certain bacteria to harness energy from sunlight and turn it into chemical energy.",
+    "response": "Plants do not convert wind energy into electrical energy using the process of photosynthesis.",
+    "label": 0
+  },
+  {
+    "context": "The Python programming language was created by Guido van Rossum and first released in 1991. It emphasizes code readability and clean syntax.",
+    "response": "Guido van Rossum released the Python language in 1991 to promote clean, readable code.",
+    "label": 1
+  },
+  {
+    "context": "The Python programming language was created by Guido van Rossum and first released in 1991. It emphasizes code readability and clean syntax.",
+    "response": "Dennis Ritchie released the Rust language in 2008 to promote clean, readable code.",
+    "label": 0
+  },
+  {
+    "context": "The Python programming language was created by Guido van Rossum and first released in 1991. It emphasizes code readability and clean syntax.",
+    "response": "Guido van Rossum released the Python language in 1991 to promote clean, readable code. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Acme Corp earned $12.5 million in revenue during the first quarter of 2024, showing an 8% quarterly growth. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. Constructed in 1889, it was designed by engineer Gustave Eiffel.",
+    "response": "The Colosseum was designed by Nikola Tesla and built in Berlin in 2001.",
+    "label": 0
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Acme Corp earned $12.5 million in revenue during the first quarter of 2024, showing an 8% quarterly growth. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Globex Corporation earned $1.2 million in revenue during the first quarter of 2024, showing an 80% quarterly growth.",
+    "label": 0
+  },
+  {
+    "context": "The Python programming language was created by Guido van Rossum and first released in 1991. It emphasizes code readability and clean syntax.",
+    "response": "Guido van Rossum released the Python language in 1991 to promote clean, readable code. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "Water is a chemical compound consisting of two hydrogen atoms bonded to one oxygen atom. At sea level, it boils at 100 degrees Celsius (212 degrees Fahrenheit).",
+    "response": "Alcohol consists of nitrogen and chlorine and boils at 200 degrees Celsius at sea level.",
+    "label": 0
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Acme Corp earned $12.5 million in revenue during the first quarter of 2024, showing an 8% quarterly growth. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "Photosynthesis is the process used by plants, algae and certain bacteria to harness energy from sunlight and turn it into chemical energy.",
+    "response": "Plants convert sunlight into chemical energy using the process of photosynthesis. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Acme Corp earned $12.5 million in revenue during the first quarter of 2024, showing an 8% quarterly growth. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Umbrella Corp earned $125 million in revenue during the first quarter of 2024, showing an 1.5% quarterly growth.",
+    "label": 0
+  },
+  {
+    "context": "The Python programming language was created by Guido van Rossum and first released in 1991. It emphasizes code readability and clean syntax.",
+    "response": "Guido van Rossum released the Python language in 1991 to promote clean, readable code. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "The Python programming language was created by Guido van Rossum and first released in 1991. It emphasizes code readability and clean syntax.",
+    "response": "Bill Gates released the Java language in 2015 to promote clean, readable code.",
+    "label": 0
+  },
+  {
+    "context": "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. Constructed in 1889, it was designed by engineer Gustave Eiffel.",
+    "response": "The Eiffel Tower was designed by Gustave Eiffel and built in Paris in 1889. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "Water is a chemical compound consisting of two hydrogen atoms bonded to one oxygen atom. At sea level, it boils at 100 degrees Celsius (212 degrees Fahrenheit).",
+    "response": "Oxygen gas consists of helium and chlorine and does not boil at 0 degrees Celsius at sea level.",
+    "label": 0
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Acme Corp earned $12.5 million in revenue during the first quarter of 2024, showing an 8% quarterly growth. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Umbrella Corp earned $1.2 million in revenue during the first quarter of 2024, showing an 80% quarterly growth.",
+    "label": 0
+  },
+  {
+    "context": "The Python programming language was created by Guido van Rossum and first released in 1991. It emphasizes code readability and clean syntax.",
+    "response": "Guido van Rossum released the Python language in 1991 to promote clean, readable code. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. Constructed in 1889, it was designed by engineer Gustave Eiffel.",
+    "response": "The Eiffel Tower was designed by Gustave Eiffel and built in Paris in 1889. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "Water is a chemical compound consisting of two hydrogen atoms bonded to one oxygen atom. At sea level, it boils at 100 degrees Celsius (212 degrees Fahrenheit).",
+    "response": "Mercury consists of nitrogen and chlorine and does not boil at 200 degrees Celsius at sea level.",
+    "label": 0
+  },
+  {
+    "context": "The Python programming language was created by Guido van Rossum and first released in 1991. It emphasizes code readability and clean syntax.",
+    "response": "Bill Gates released the C++ language in 2008 to promote clean, readable code.",
+    "label": 0
+  },
+  {
+    "context": "Photosynthesis is the process used by plants, algae and certain bacteria to harness energy from sunlight and turn it into chemical energy.",
+    "response": "Plants do not convert moonlight into kinetic energy using the process of photosynthesis.",
+    "label": 0
+  },
+  {
+    "context": "Water is a chemical compound consisting of two hydrogen atoms bonded to one oxygen atom. At sea level, it boils at 100 degrees Celsius (212 degrees Fahrenheit).",
+    "response": "Water consists of hydrogen and oxygen and boils at 100 degrees Celsius at sea level. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Acme Corp earned $12.5 million in revenue during the first quarter of 2024, showing an 8% quarterly growth. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "Water is a chemical compound consisting of two hydrogen atoms bonded to one oxygen atom. At sea level, it boils at 100 degrees Celsius (212 degrees Fahrenheit).",
+    "response": "Water consists of hydrogen and oxygen and boils at 100 degrees Celsius at sea level. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Initech earned $1.2 million in revenue during the first quarter of 2024, showing an 1.5% quarterly growth.",
+    "label": 0
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Globex Corporation earned $950 thousand in revenue during the first quarter of 2024, showing an 80% quarterly growth.",
+    "label": 0
+  },
+  {
+    "context": "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. Constructed in 1889, it was designed by engineer Gustave Eiffel.",
+    "response": "The Empire State Building was not designed by Nikola Tesla and built in London in 1950.",
+    "label": 0
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Initech earned $125 million in revenue during the first quarter of 2024, showing an 1.5% quarterly growth.",
+    "label": 0
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Globex Corporation earned $1.2 million in revenue during the first quarter of 2024, showing an negative 5% quarterly growth.",
+    "label": 0
+  },
+  {
+    "context": "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. Constructed in 1889, it was designed by engineer Gustave Eiffel.",
+    "response": "The Empire State Building was not designed by Thomas Edison and built in Berlin in 1789.",
+    "label": 0
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Acme Corp earned $12.5 million in revenue during the first quarter of 2024, showing an 8% quarterly growth. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "Photosynthesis is the process used by plants, algae and certain bacteria to harness energy from sunlight and turn it into chemical energy.",
+    "response": "Plants convert sunlight into chemical energy using the process of photosynthesis. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. Constructed in 1889, it was designed by engineer Gustave Eiffel.",
+    "response": "The Colosseum was designed by Albert Einstein and built in London in 1812.",
+    "label": 0
+  },
+  {
+    "context": "The Python programming language was created by Guido van Rossum and first released in 1991. It emphasizes code readability and clean syntax.",
+    "response": "Dennis Ritchie never released the COBOL language in 1980 to promote clean, readable code.",
+    "label": 0
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Initech earned $950 thousand in revenue during the first quarter of 2024, showing an 1.5% quarterly growth.",
+    "label": 0
+  },
+  {
+    "context": "Photosynthesis is the process used by plants, algae and certain bacteria to harness energy from sunlight and turn it into chemical energy.",
+    "response": "Plants convert nuclear power into kinetic energy using the process of photosynthesis.",
+    "label": 0
+  },
+  {
+    "context": "The Python programming language was created by Guido van Rossum and first released in 1991. It emphasizes code readability and clean syntax.",
+    "response": "Linus Torvalds never released the COBOL language in 1980 to promote clean, readable code.",
+    "label": 0
+  },
+  {
+    "context": "The Python programming language was created by Guido van Rossum and first released in 1991. It emphasizes code readability and clean syntax.",
+    "response": "Guido van Rossum released the Python language in 1991 to promote clean, readable code. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "Water is a chemical compound consisting of two hydrogen atoms bonded to one oxygen atom. At sea level, it boils at 100 degrees Celsius (212 degrees Fahrenheit).",
+    "response": "Water consists of hydrogen and oxygen and boils at 100 degrees Celsius at sea level. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Acme Corp earned $12.5 million in revenue during the first quarter of 2024, showing an 8% quarterly growth. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Acme Corp earned $12.5 million in revenue during the first quarter of 2024, showing an 8% quarterly growth. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "Photosynthesis is the process used by plants, algae and certain bacteria to harness energy from sunlight and turn it into chemical energy.",
+    "response": "Plants convert sunlight into chemical energy using the process of photosynthesis. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "Water is a chemical compound consisting of two hydrogen atoms bonded to one oxygen atom. At sea level, it boils at 100 degrees Celsius (212 degrees Fahrenheit).",
+    "response": "Water consists of hydrogen and oxygen and boils at 100 degrees Celsius at sea level. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "Photosynthesis is the process used by plants, algae and certain bacteria to harness energy from sunlight and turn it into chemical energy.",
+    "response": "Plants convert wind energy into kinetic energy using the process of photosynthesis.",
+    "label": 0
+  },
+  {
+    "context": "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. Constructed in 1889, it was designed by engineer Gustave Eiffel.",
+    "response": "The Colosseum was designed by Albert Einstein and built in London in 1812.",
+    "label": 0
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Umbrella Corp earned $1.2 million in revenue during the first quarter of 2024, showing an 80% quarterly growth.",
+    "label": 0
+  },
+  {
+    "context": "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. Constructed in 1889, it was designed by engineer Gustave Eiffel.",
+    "response": "The Eiffel Tower was designed by Gustave Eiffel and built in Paris in 1889. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "Photosynthesis is the process used by plants, algae and certain bacteria to harness energy from sunlight and turn it into chemical energy.",
+    "response": "Plants do not convert moonlight into electrical energy using the process of photosynthesis.",
+    "label": 0
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Umbrella Corp earned $1.2 million in revenue during the first quarter of 2024, showing an negative 5% quarterly growth.",
+    "label": 0
+  },
+  {
+    "context": "Water is a chemical compound consisting of two hydrogen atoms bonded to one oxygen atom. At sea level, it boils at 100 degrees Celsius (212 degrees Fahrenheit).",
+    "response": "Alcohol consists of helium and helium and boils at 50 degrees Celsius at sea level.",
+    "label": 0
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Acme Corp earned $12.5 million in revenue during the first quarter of 2024, showing an 8% quarterly growth. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "Water is a chemical compound consisting of two hydrogen atoms bonded to one oxygen atom. At sea level, it boils at 100 degrees Celsius (212 degrees Fahrenheit).",
+    "response": "Water consists of hydrogen and oxygen and boils at 100 degrees Celsius at sea level. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Acme Corp earned $12.5 million in revenue during the first quarter of 2024, showing an 8% quarterly growth. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "The Python programming language was created by Guido van Rossum and first released in 1991. It emphasizes code readability and clean syntax.",
+    "response": "Bill Gates never released the Rust language in 2008 to promote clean, readable code.",
+    "label": 0
+  },
+  {
+    "context": "The Python programming language was created by Guido van Rossum and first released in 1991. It emphasizes code readability and clean syntax.",
+    "response": "Guido van Rossum released the Python language in 1991 to promote clean, readable code. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "The Python programming language was created by Guido van Rossum and first released in 1991. It emphasizes code readability and clean syntax.",
+    "response": "Guido van Rossum released the Python language in 1991 to promote clean, readable code. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "The Python programming language was created by Guido van Rossum and first released in 1991. It emphasizes code readability and clean syntax.",
+    "response": "Guido van Rossum released the Python language in 1991 to promote clean, readable code. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "Photosynthesis is the process used by plants, algae and certain bacteria to harness energy from sunlight and turn it into chemical energy.",
+    "response": "Plants convert sunlight into chemical energy using the process of photosynthesis. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. Constructed in 1889, it was designed by engineer Gustave Eiffel.",
+    "response": "The Colosseum was not designed by Thomas Edison and built in Rome in 1950.",
+    "label": 0
+  },
+  {
+    "context": "Photosynthesis is the process used by plants, algae and certain bacteria to harness energy from sunlight and turn it into chemical energy.",
+    "response": "Plants convert wind energy into electrical energy using the process of photosynthesis.",
+    "label": 0
+  },
+  {
+    "context": "Water is a chemical compound consisting of two hydrogen atoms bonded to one oxygen atom. At sea level, it boils at 100 degrees Celsius (212 degrees Fahrenheit).",
+    "response": "Water consists of hydrogen and oxygen and boils at 100 degrees Celsius at sea level. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. Constructed in 1889, it was designed by engineer Gustave Eiffel.",
+    "response": "The Colosseum was not designed by Albert Einstein and built in Rome in 2001.",
+    "label": 0
+  },
+  {
+    "context": "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. Constructed in 1889, it was designed by engineer Gustave Eiffel.",
+    "response": "The Louvre Museum was designed by Thomas Edison and built in Berlin in 2001.",
+    "label": 0
+  },
+  {
+    "context": "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. Constructed in 1889, it was designed by engineer Gustave Eiffel.",
+    "response": "The Louvre Museum was designed by Albert Einstein and built in Madrid in 1789.",
+    "label": 0
+  },
+  {
+    "context": "Photosynthesis is the process used by plants, algae and certain bacteria to harness energy from sunlight and turn it into chemical energy.",
+    "response": "Plants do not convert moonlight into electrical energy using the process of photosynthesis.",
+    "label": 0
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Acme Corp earned $12.5 million in revenue during the first quarter of 2024, showing an 8% quarterly growth. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "The Python programming language was created by Guido van Rossum and first released in 1991. It emphasizes code readability and clean syntax.",
+    "response": "Dennis Ritchie released the C++ language in 2015 to promote clean, readable code.",
+    "label": 0
+  },
+  {
+    "context": "The Python programming language was created by Guido van Rossum and first released in 1991. It emphasizes code readability and clean syntax.",
+    "response": "Linus Torvalds released the Rust language in 2015 to promote clean, readable code.",
+    "label": 0
+  },
+  {
+    "context": "Photosynthesis is the process used by plants, algae and certain bacteria to harness energy from sunlight and turn it into chemical energy.",
+    "response": "Plants convert moonlight into nuclear energy using the process of photosynthesis.",
+    "label": 0
+  },
+  {
+    "context": "Photosynthesis is the process used by plants, algae and certain bacteria to harness energy from sunlight and turn it into chemical energy.",
+    "response": "Plants do not convert moonlight into kinetic energy using the process of photosynthesis.",
+    "label": 0
+  },
+  {
+    "context": "Photosynthesis is the process used by plants, algae and certain bacteria to harness energy from sunlight and turn it into chemical energy.",
+    "response": "Plants convert sunlight into chemical energy using the process of photosynthesis. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. Constructed in 1889, it was designed by engineer Gustave Eiffel.",
+    "response": "The Colosseum was not designed by Albert Einstein and built in Rome in 2001.",
+    "label": 0
+  },
+  {
+    "context": "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. Constructed in 1889, it was designed by engineer Gustave Eiffel.",
+    "response": "The Eiffel Tower was designed by Gustave Eiffel and built in Paris in 1889. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "The Python programming language was created by Guido van Rossum and first released in 1991. It emphasizes code readability and clean syntax.",
+    "response": "Guido van Rossum released the Python language in 1991 to promote clean, readable code. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "The Python programming language was created by Guido van Rossum and first released in 1991. It emphasizes code readability and clean syntax.",
+    "response": "Guido van Rossum released the Python language in 1991 to promote clean, readable code. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "Water is a chemical compound consisting of two hydrogen atoms bonded to one oxygen atom. At sea level, it boils at 100 degrees Celsius (212 degrees Fahrenheit).",
+    "response": "Alcohol consists of helium and chlorine and boils at 200 degrees Celsius at sea level.",
+    "label": 0
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Globex Corporation earned $1.2 million in revenue during the first quarter of 2024, showing an 1.5% quarterly growth.",
+    "label": 0
+  },
+  {
+    "context": "Water is a chemical compound consisting of two hydrogen atoms bonded to one oxygen atom. At sea level, it boils at 100 degrees Celsius (212 degrees Fahrenheit).",
+    "response": "Water consists of hydrogen and oxygen and boils at 100 degrees Celsius at sea level. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Acme Corp earned $12.5 million in revenue during the first quarter of 2024, showing an 8% quarterly growth. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Acme Corp earned $12.5 million in revenue during the first quarter of 2024, showing an 8% quarterly growth. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "The Python programming language was created by Guido van Rossum and first released in 1991. It emphasizes code readability and clean syntax.",
+    "response": "Bill Gates never released the Java language in 1980 to promote clean, readable code.",
+    "label": 0
+  },
+  {
+    "context": "Water is a chemical compound consisting of two hydrogen atoms bonded to one oxygen atom. At sea level, it boils at 100 degrees Celsius (212 degrees Fahrenheit).",
+    "response": "Water consists of hydrogen and oxygen and boils at 100 degrees Celsius at sea level. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "The Python programming language was created by Guido van Rossum and first released in 1991. It emphasizes code readability and clean syntax.",
+    "response": "Dennis Ritchie released the C++ language in 2008 to promote clean, readable code.",
+    "label": 0
+  },
+  {
+    "context": "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. Constructed in 1889, it was designed by engineer Gustave Eiffel.",
+    "response": "The Empire State Building was designed by Albert Einstein and built in Madrid in 1950.",
+    "label": 0
+  },
+  {
+    "context": "Photosynthesis is the process used by plants, algae and certain bacteria to harness energy from sunlight and turn it into chemical energy.",
+    "response": "Plants convert sunlight into chemical energy using the process of photosynthesis. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "Water is a chemical compound consisting of two hydrogen atoms bonded to one oxygen atom. At sea level, it boils at 100 degrees Celsius (212 degrees Fahrenheit).",
+    "response": "Oxygen gas consists of nitrogen and chlorine and boils at 200 degrees Celsius at sea level.",
+    "label": 0
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Globex Corporation earned $1.2 million in revenue during the first quarter of 2024, showing an 1.5% quarterly growth.",
+    "label": 0
+  },
+  {
+    "context": "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. Constructed in 1889, it was designed by engineer Gustave Eiffel.",
+    "response": "The Empire State Building was not designed by Thomas Edison and built in London in 1812.",
+    "label": 0
+  },
+  {
+    "context": "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. Constructed in 1889, it was designed by engineer Gustave Eiffel.",
+    "response": "The Empire State Building was not designed by Nikola Tesla and built in Madrid in 1812.",
+    "label": 0
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Initech earned $1.2 million in revenue during the first quarter of 2024, showing an negative 5% quarterly growth.",
+    "label": 0
+  },
+  {
+    "context": "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. Constructed in 1889, it was designed by engineer Gustave Eiffel.",
+    "response": "The Louvre Museum was designed by Thomas Edison and built in Rome in 1789.",
+    "label": 0
+  },
+  {
+    "context": "Photosynthesis is the process used by plants, algae and certain bacteria to harness energy from sunlight and turn it into chemical energy.",
+    "response": "Plants convert sunlight into chemical energy using the process of photosynthesis. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Globex Corporation earned $1.2 million in revenue during the first quarter of 2024, showing an 80% quarterly growth.",
+    "label": 0
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Acme Corp earned $12.5 million in revenue during the first quarter of 2024, showing an 8% quarterly growth. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. Constructed in 1889, it was designed by engineer Gustave Eiffel.",
+    "response": "The Colosseum was designed by Thomas Edison and built in Berlin in 1812.",
+    "label": 0
+  },
+  {
+    "context": "In Q1 2024, Acme Corp reported a record revenue of $12.5 million, marking an 8% increase compared to the previous quarter. Operating expenses were reduced by $1.2 million.",
+    "response": "Umbrella Corp earned $1.2 million in revenue during the first quarter of 2024, showing an 1.5% quarterly growth.",
+    "label": 0
+  },
+  {
+    "context": "The Python programming language was created by Guido van Rossum and first released in 1991. It emphasizes code readability and clean syntax.",
+    "response": "Guido van Rossum released the Python language in 1991 to promote clean, readable code. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "Water is a chemical compound consisting of two hydrogen atoms bonded to one oxygen atom. At sea level, it boils at 100 degrees Celsius (212 degrees Fahrenheit).",
+    "response": "Water consists of hydrogen and oxygen and boils at 100 degrees Celsius at sea level. This was confirmed in standard scientific literature.",
+    "label": 1
+  },
+  {
+    "context": "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. Constructed in 1889, it was designed by engineer Gustave Eiffel.",
+    "response": "The Louvre Museum was not designed by Albert Einstein and built in Berlin in 1812.",
+    "label": 0
+  }
+]
