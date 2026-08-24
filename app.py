@@ -115,7 +115,16 @@ def debug_env():
         v = os.getenv(k, "")
         if not v or v.startswith("YOUR_"): return "missing"
         return f"set(len={len(v)})"
-    return jsonify({k: check(k) for k in ["GEMINI_API_KEY", "GROQ_API_KEY", "OPENAI_API_KEY"]})
+    return jsonify({
+        "raw_env": {k: check(k) for k in ["GEMINI_API_KEY", "GROQ_API_KEY", "OPENAI_API_KEY"]},
+        "guardrail": {
+            "gemini": "active" if guardrail.gemini_key else "missing",
+            "groq": "active" if guardrail.groq_key else "missing",
+            "openai": "active" if guardrail.openai_key else "missing",
+            "gemini_len": len(guardrail.gemini_key or ""),
+            "groq_len": len(guardrail.groq_key or ""),
+        }
+    })
 
 @app.route("/api/audit/logs", methods=["GET"])
 def audit_logs():
