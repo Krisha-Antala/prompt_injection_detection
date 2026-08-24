@@ -40,11 +40,16 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function initSecurityScanner() {
-    const input = document.getElementById("security-input");
+    const inputPrivate = document.getElementById("security-input-private") || document.getElementById("security-input");
+    const inputPoisoning = document.getElementById("security-input-poisoning") || document.getElementById("security-input");
+    const legacyInput = document.getElementById("security-input");
     const fileInput = document.getElementById("security-file");
     const uploadResult = document.getElementById("upload-result");
     const privateBox = document.getElementById("private-data-result");
     const poisonBox = document.getElementById("poisoning-result");
+    // Keep legacy textarea in sync if present (so old code/external triggers still work)
+    const getPrivateText = () => (inputPrivate && inputPrivate.value.trim()) || (legacyInput && legacyInput.value.trim()) || "";
+    const getPoisonText = () => (inputPoisoning && inputPoisoning.value.trim()) || (legacyInput && legacyInput.value.trim()) || "";
 
     const renderPrivateData = (data) => {
         privateBox.classList.remove("empty");
@@ -135,29 +140,31 @@ function initSecurityScanner() {
     document.getElementById("btn-scan-poisoning").dataset.label = document.getElementById("btn-scan-poisoning").innerHTML;
 
     document.getElementById("btn-scan-private").addEventListener("click", async () => {
-        if (!input.value.trim()) { privateBox.innerHTML = '<div class="scan-result-box unsafe" style="min-height:auto;"><i class="fa-solid fa-circle-exclamation"></i> Paste text first.</div>'; return; }
+        const text = getPrivateText();
+        if (!text) { privateBox.classList.remove("empty"); privateBox.className = "scan-result-box unsafe"; privateBox.innerHTML = '<div class="scan-result-title unsafe"><i class="fa-solid fa-circle-exclamation"></i> Paste text first</div><p style="font-size:0.85rem;color:var(--text-secondary);">Use the Paste box in this Private Data panel.</p>'; return; }
         const btn = document.getElementById("btn-scan-private");
         setBtnLoading(btn, true);
         try {
-            const response = await fetch("/api/security/scan", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: input.value }) });
+            const response = await fetch("/api/security/scan", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text }) });
             renderPrivateData(await response.json());
             loadAuditLogs();
         } catch (e) {
-            privateBox.className = "scan-result-box unsafe";
+            privateBox.classList.remove("empty"); privateBox.className = "scan-result-box unsafe";
             privateBox.innerHTML = '<div class="scan-result-title unsafe">Scan failed</div><p>Could not reach server.</p>';
         } finally { setBtnLoading(btn, false); }
     });
 
     document.getElementById("btn-scan-poisoning").addEventListener("click", async () => {
-        if (!input.value.trim()) { poisonBox.innerHTML = '<div class="scan-result-box unsafe" style="min-height:auto;"><i class="fa-solid fa-circle-exclamation"></i> Paste text first.</div>'; return; }
+        const text = getPoisonText();
+        if (!text) { poisonBox.classList.remove("empty"); poisonBox.className = "scan-result-box unsafe"; poisonBox.innerHTML = '<div class="scan-result-title unsafe"><i class="fa-solid fa-circle-exclamation"></i> Paste text first</div><p style="font-size:0.85rem;color:var(--text-secondary);">Use the Paste box in this Document Poisoning panel.</p>'; return; }
         const btn = document.getElementById("btn-scan-poisoning");
         setBtnLoading(btn, true);
         try {
-            const response = await fetch("/api/security/scan-document", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: input.value, filename: "manual-input" }) });
+            const response = await fetch("/api/security/scan-document", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text, filename: "manual-input" }) });
             renderPoisoning(await response.json());
             loadAuditLogs();
         } catch (e) {
-            poisonBox.className = "scan-result-box unsafe";
+            poisonBox.classList.remove("empty"); poisonBox.className = "scan-result-box unsafe";
             poisonBox.innerHTML = '<div class="scan-result-title unsafe">Scan failed</div><p>Could not reach server.</p>';
         } finally { setBtnLoading(btn, false); }
     });

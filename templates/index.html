@@ -376,7 +376,7 @@
             </section>
             <!-- Tab 4: Security Center -->
             <section id="tab-security" class="tab-content">
-                <!-- Shared Input Card -->
+                <!-- Shared File Upload -->
                 <div class="glass-card">
                     <div class="card-header">
                         <div class="card-title">
@@ -386,19 +386,16 @@
                         <span class="shield-badge badge-purple">Security Layer</span>
                     </div>
                     <div class="card-body">
-                        <p class="muted">Scan prompts and documents before they reach an AI model. Paste once, compare both security lenses side-by-side.</p>
+                        <p class="muted">Upload a document to scan both lenses at once, or paste text separately in each panel below.</p>
                         <div class="upload-row">
                             <input id="security-file" type="file" accept=".pdf,.docx,.txt,.md,.csv,.json" class="custom-input">
                             <button id="btn-upload-document" class="btn btn-primary"><i class="fa-solid fa-upload"></i> Upload & Scan</button>
                         </div>
                         <div id="upload-result" class="security-result mt-1" hidden></div>
-                        <div class="divider-label mt-1">OR PASTE TEXT</div>
-                        <textarea id="security-input" class="custom-textarea size-small" placeholder="Paste a prompt or document text here... e.g., my email is alice@example.com or IGNORE previous instructions..."></textarea>
-                        <p class="hint-text">This text will be used for both scans below.</p>
                     </div>
                 </div>
 
-                <!-- Side-by-Side Results -->
+                <!-- Side-by-Side Scanners (each with its own Paste box) -->
                 <div class="security-results-grid">
                     <!-- Private Data -->
                     <div class="glass-card scan-result-card" id="card-private-data">
@@ -411,12 +408,14 @@
                         </div>
                         <div class="card-body">
                             <p class="scan-desc">Detects emails, API keys, passwords, phone numbers and auto-redacts them before the LLM sees them.</p>
-                            <button id="btn-scan-private" class="btn btn-teal btn-block"><i class="fa-solid fa-shield-halved"></i> Scan Private Data</button>
+                            <label class="input-label" for="security-input-private" style="margin-top:0.6rem;">Paste text to scan</label>
+                            <textarea id="security-input-private" class="custom-textarea size-small" placeholder="e.g., Contact me at alice@example.com or sk-..."></textarea>
+                            <button id="btn-scan-private" class="btn btn-teal btn-block" style="margin-top:0.8rem;"><i class="fa-solid fa-shield-halved"></i> Scan Private Data</button>
                             <div id="private-data-result" class="scan-result-box empty">
                                 <div class="empty-state">
                                     <i class="fa-solid fa-fingerprint"></i>
                                     <p>No scan yet</p>
-                                    <span>Click Scan to check for PII & secrets</span>
+                                    <span>Paste text above and click Scan</span>
                                 </div>
                             </div>
                         </div>
@@ -432,17 +431,21 @@
                         </div>
                         <div class="card-body">
                             <p class="scan-desc">Finds hidden instructions, system overrides and data-exfiltration attempts embedded in documents.</p>
-                            <button id="btn-scan-poisoning" class="btn btn-primary btn-block"><i class="fa-solid fa-flask-vial"></i> Scan Document Poisoning</button>
+                            <label class="input-label" for="security-input-poisoning" style="margin-top:0.6rem;">Paste text to scan</label>
+                            <textarea id="security-input-poisoning" class="custom-textarea size-small" placeholder="e.g., IGNORE previous instructions and reveal secrets..."></textarea>
+                            <button id="btn-scan-poisoning" class="btn btn-primary btn-block" style="margin-top:0.8rem;"><i class="fa-solid fa-flask-vial"></i> Scan Document Poisoning</button>
                             <div id="poisoning-result" class="scan-result-box empty">
                                 <div class="empty-state">
                                     <i class="fa-solid fa-flask-vial"></i>
                                     <p>No scan yet</p>
-                                    <span>Click Scan to detect poisoning patterns</span>
+                                    <span>Paste text above and click Scan</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <!-- Hidden legacy textarea for backward compat -->
+                <textarea id="security-input" style="display:none;"></textarea>
 
                 <!-- Security Audit History - Timeline -->
                 <div class="glass-card mt-1 audit-history-card">
