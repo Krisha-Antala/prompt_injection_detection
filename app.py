@@ -108,14 +108,6 @@ def security_upload():
         return jsonify({"error": f"Could not read this document: {exc}"}), 400
 
 
-@app.route("/api/debug/probe", methods=["GET"])
-def debug_probe():
-    try:
-        txt, err = guardrail.query_groq("Reply with OK", None)
-        return jsonify({"ok": bool(txt), "err": (err or "")[:200], "txt": (txt or "")[:100]})
-    except Exception as e:
-        return jsonify({"ok": False, "err": str(e)[:200]})
-
 @app.route("/api/audit/logs", methods=["GET"])
 def audit_logs():
     limit = min(max(request.args.get("limit", 50, type=int), 1), 200)
