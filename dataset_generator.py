@@ -351,35 +351,36 @@ def save_datasets(dest_dir="data", num_samples=None):
             if len(candidate_inj) == 0:
                 candidate_inj = new_inj[:num_samples]
                 candidate_hal = new_hal[:num_samples]
-            # Deduplicate: add only prompts/pairs not already present
+            # Deduplicate: add only prompts/pairs not already present, keep generating until we have num_samples unique
             existing_inj_texts = {item.get("text", "") for item in injections}
             existing_hal_pairs = {(item.get("context", ""), item.get("response", "")) for item in hallucinations}
             unique_inj = [it for it in candidate_inj if it.get("text", "") not in existing_inj_texts]
             unique_hal = [it for it in candidate_hal if (it.get("context", ""), it.get("response", "")) not in existing_hal_pairs]
-            # If all candidates were duplicates, try generating more unique ones (up to 3 attempts)
+            # Keep generating until we have num_samples unique each (or max 10 attempts)
             attempts = 0
-            while (len(unique_inj) < len(candidate_inj) or len(unique_hal) < len(candidate_hal)) and attempts < 3 and (len(unique_inj) == 0 or len(unique_hal) == 0):
+            while (len(unique_inj) < num_samples or len(unique_hal) < num_samples) and attempts < 10:
                 attempts += 1
                 extra_inj, extra_hal = generate_local_datasets(num_samples=num_samples)
                 extra_inj = extra_inj[seed_inj_len:seed_inj_len + num_samples]
                 extra_hal = extra_hal[seed_hal_len:seed_hal_len + num_samples]
                 for it in extra_inj:
-                    if it.get("text", "") not in existing_inj_texts and it not in unique_inj:
+                    if len(unique_inj) >= num_samples:
+                        break
+                    if it.get("text", "") not in existing_inj_texts:
                         unique_inj.append(it)
                         existing_inj_texts.add(it.get("text", ""))
-                        if len(unique_inj) >= num_samples:
-                            break
                 for it in extra_hal:
+                    if len(unique_hal) >= num_samples:
+                        break
                     key = (it.get("context", ""), it.get("response", ""))
-                    if key not in existing_hal_pairs and it not in unique_hal:
+                    if key not in existing_hal_pairs:
                         unique_hal.append(it)
                         existing_hal_pairs.add(key)
-                        if len(unique_hal) >= num_samples:
-                            break
-                if len(unique_inj) >= 1 and len(unique_hal) >= 1:
+                if len(unique_inj) >= num_samples and len(unique_hal) >= num_samples:
                     break
-            injections.extend(unique_inj)
-            hallucinations.extend(unique_hal)
+            # Trim to exactly num_samples
+            injections.extend(unique_inj[:num_samples])
+            hallucinations.extend(unique_hal[:num_samples])
     else:
         injections, hallucinations = generate_local_datasets(num_samples=num_samples) if num_samples else generate_local_datasets()
     
