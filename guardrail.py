@@ -407,18 +407,19 @@ class GuardrailWrapper:
                             "model": model,
                             "messages": [{"role": "user", "content": prompt}],
                             "temperature": 0,
-                            "max_tokens": 80,
+                            "max_tokens": 200,
                         }
                         r = self.session.post(
                             "https://api.groq.com/openai/v1/chat/completions",
                             headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
-                            json=payload, timeout=12,
+                            json=payload, timeout=15,
                         )
                         if r.status_code != 200:
                             if r.status_code == 404:
                                 continue
                             break
-                        txt = r.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+                        msg = r.json().get("choices", [{}])[0].get("message", {})
+                        txt = (msg.get("content") or "") + (msg.get("reasoning") or "")
                         m = re.search(r"\{[^}]*hallucination[^}]*\}", txt, re.IGNORECASE | re.DOTALL)
                         if m:
                             j = _json.loads(m.group(0))
@@ -429,7 +430,8 @@ class GuardrailWrapper:
                                 "method": f"llm-{name}",
                                 "reason": j.get("reason", ""),
                             }
-                        break
+                        # No JSON found -> try next model (reasoning model may need different prompt)
+                        continue
                 elif name == "gemini":
                     payload = {
                         "contents": [{"parts": [{"text": prompt}]}],
