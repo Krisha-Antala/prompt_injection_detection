@@ -186,6 +186,9 @@ def detect_hallucination():
         return jsonify({"error": "Context and Response are required"}), 400
         
     res = get_hallucination_detector().predict(context, response)
+    # On serverless (ML unavailable) use LLM-based check
+    if res.get("method") == "unavailable":
+        res = guardrail._llm_grounding_check(context, response)
     return jsonify(res)
 
 @app.route("/api/guardrail/chat", methods=["POST"])

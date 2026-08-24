@@ -369,7 +369,11 @@ class GuardrailWrapper:
         # --- 3. Scan Output for Hallucination & Factual Consistency ---
         if context:
             hallucination_result = self.hallucination_detector.predict(context, llm_response)
+            # On serverless (ML models unavailable) use LLM-based grounding check
+            if hallucination_result.get("method") == "unavailable":
+                hallucination_result = self._llm_grounding_check(context, llm_response)
             result["hallucination_score"] = round(1.0 - hallucination_result["grounding_score"], 4)
+            result["hallucination_details"] = hallucination_result
 
             if hallucination_result["hallucination_detected"]:
                 result["safe"] = False
@@ -377,6 +381,114 @@ class GuardrailWrapper:
                 result["output_text"] = "Warning: The generated response contains unverified information unsupported by the context database."
 
         return result
+
+    def _llm_grounding_check(self, context, response):
+        """LLM-based hallucination check for serverless (no local NLI/embeddings)."""
+        import json as _json
+        prompt = (
+            f'Context: "{context}"\n'
+            f'Response: "{response}"\n'
+            f'Does the Response contain any fact NOT supported by or contradicting the Context? '
+            f'Reply ONLY valid JSON: {{"hallucination": true/false, "reason": "short"}}'
+        )
+        # Try Groq first (fastest free), then Gemini, then OpenAI
+        for name in ["groq", "gemini", "openai"]:
+            key = getattr(self, f"{name}_key")
+            if not key:
+                continue
+            try:
+                if name == "groq":
+                    candidates = [self._groq_model] if self._groq_model else []
+                    for m in GROQ_MODEL_FALLBACKS:
+                        if m not in candidates:
+                            candidates.append(m)
+                    for model in candidates:
+                        payload = {
+                            "model": model,
+                            "messages": [{"role": "user", "content": prompt}],
+                            "temperature": 0,
+                            "max_tokens": 80,
+                        }
+                        r = self.session.post(
+                            "https://api.groq.com/openai/v1/chat/completions",
+                            headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+                            json=payload, timeout=12,
+                        )
+                        if r.status_code != 200:
+                            if r.status_code == 404:
+                                continue
+                            break
+                        txt = r.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+                        m = re.search(r"\{[^}]*hallucination[^}]*\}", txt, re.IGNORECASE | re.DOTALL)
+                        if m:
+                            j = _json.loads(m.group(0))
+                            is_hall = bool(j.get("hallucination"))
+                            return {
+                                "hallucination_detected": is_hall,
+                                "grounding_score": 0.2 if is_hall else 0.95,
+                                "method": f"llm-{name}",
+                                "reason": j.get("reason", ""),
+                            }
+                        break
+                elif name == "gemini":
+                    payload = {
+                        "contents": [{"parts": [{"text": prompt}]}],
+                        "generationConfig": {"temperature": 0, "maxOutputTokens": 80},
+                    }
+                    candidates = [self._gemini_model] if self._gemini_model else []
+                    for m in GEMINI_MODEL_FALLBACKS:
+                        if m not in candidates:
+                            candidates.append(m)
+                    for model in candidates:
+                        r = self.session.post(
+                            f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+                            params={"key": key}, json=payload, timeout=12,
+                        )
+                        if r.status_code != 200:
+                            continue
+                        parts = r.json().get("candidates", [{}])[0].get("content", {}).get("parts", [])
+                        txt = "".join(p.get("text", "") for p in parts if not p.get("thought"))
+                        m = re.search(r"\{[^}]*hallucination[^}]*\}", txt, re.IGNORECASE | re.DOTALL)
+                        if m:
+                            j = _json.loads(m.group(0))
+                            is_hall = bool(j.get("hallucination"))
+                            return {
+                                "hallucination_detected": is_hall,
+                                "grounding_score": 0.2 if is_hall else 0.95,
+                                "method": f"llm-{name}",
+                                "reason": j.get("reason", ""),
+                            }
+                        break
+                else:  # openai
+                    payload = {
+                        "model": "gpt-4o-mini",
+                        "messages": [{"role": "user", "content": prompt}],
+                        "temperature": 0,
+                        "max_tokens": 80,
+                    }
+                    r = self.session.post(
+                        "https://api.openai.com/v1/chat/completions",
+                        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+                        json=payload, timeout=12,
+                    )
+                    if r.status_code != 200:
+                        continue
+                    txt = r.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+                    m = re.search(r"\{[^}]*hallucination[^}]*\}", txt, re.IGNORECASE | re.DOTALL)
+                    if m:
+                        j = _json.loads(m.group(0))
+                        is_hall = bool(j.get("hallucination"))
+                        return {
+                            "hallucination_detected": is_hall,
+                            "grounding_score": 0.2 if is_hall else 0.95,
+                            "method": f"llm-{name}",
+                            "reason": j.get("reason", ""),
+                        }
+                    break
+            except Exception:
+                continue
+        # Fallback: fail-open if LLM check also unavailable
+        return {"hallucination_detected": False, "grounding_score": 1.0, "method": "unavailable-fallback"}
 
     def _simulate_llm_response(self, prompt, context):
         """Simulates intelligent offline answers when no live API keys are connected."""
