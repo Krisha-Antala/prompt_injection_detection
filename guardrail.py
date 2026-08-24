@@ -76,10 +76,10 @@ class GuardrailWrapper:
         self.session.mount("https://", adapter)
         self.session.mount("http://", adapter)
 
-        # Load API keys from environment
-        self.gemini_key = os.getenv("GEMINI_API_KEY")
-        self.groq_key = os.getenv("GROQ_API_KEY")
-        self.openai_key = os.getenv("OPENAI_API_KEY")
+        # Load API keys from environment (strip whitespace/newlines from Vercel env injection)
+        self.gemini_key = (os.getenv("GEMINI_API_KEY") or "").strip() or None
+        self.groq_key = (os.getenv("GROQ_API_KEY") or "").strip() or None
+        self.openai_key = (os.getenv("OPENAI_API_KEY") or "").strip() or None
 
         # Clean placeholder values
         placeholders = {"your_gemini_api_key_here", "your_groq_api_key_here", "your_openai_api_key_here", "your_new_key_here", "", None}
