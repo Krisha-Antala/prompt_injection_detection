@@ -52,6 +52,10 @@ HEURISTIC_PATTERNS = [
     r"(crack|hack|brute force|bypass).*(wifi|wi-fi|wpa|wpa2|wep|router|hotspot|password|passwd|pass|login|auth)",
     r"(steal|exfiltrate|leak|dump|print|reveal|harvest).*(api key|password|secret|token|credential|database|shadow file|sam file)",
     r"(default|admin|root) (password|credential) for (database|router|server)",
+    # 2.5 Credential & Data Exfiltration Requests (e.g., "give me password of all users")
+    r"(give|show|list|get|provide|dump|extract|reveal|print|return).{0,60}(password|passwd|credential|secret|token|hash|login).{0,40}(all|every|user|account|database|logged)",
+    r"(password|passwd|credential|secret|token).{0,30}(all|every).{0,20}(user|account|database|login|logged)",
+    r"\b(show|list|dump|give).{0,30}(all|every).{0,20}(user|password|credential|account)",
     
     # 3. System Hacking & Unauthorized Access
     r"(how (to|can i)|guide to|script to).*(hack|break into|penetrate|infiltrate|unauthorized access).*(account|server|database|system|wifi|network|device|phone|pc|camera)",
