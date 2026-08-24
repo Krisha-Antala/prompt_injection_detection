@@ -1,0 +1,14 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.pyc
+venv/
+
+# Models & data artifacts
+models/
+results/
+logs/
+data/audit.db
+chroma_db/
