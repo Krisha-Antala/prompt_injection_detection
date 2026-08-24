@@ -41,10 +41,53 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function initSecurityScanner() {
     const input = document.getElementById("security-input");
-    const result = document.getElementById("security-result");
     const fileInput = document.getElementById("security-file");
     const uploadResult = document.getElementById("upload-result");
-    const show = (data) => { result.textContent = JSON.stringify(data, null, 2); };
+    const privateBox = document.getElementById("private-data-result");
+    const poisonBox = document.getElementById("poisoning-result");
+
+    const renderPrivateData = (data) => {
+        privateBox.classList.remove("empty");
+        if (data.detected) {
+            privateBox.className = "scan-result-box unsafe";
+            const badges = data.findings.map(f => `<span class="finding-badge type-${f.type}">${f.type} ×${f.count}</span>`).join("");
+            privateBox.innerHTML = `
+                <div class="scan-result-title unsafe"><i class="fa-solid fa-triangle-exclamation"></i> Private Data Detected</div>
+                <div class="findings-list">${badges}</div>
+                <p style="color:var(--text-secondary);font-size:0.82rem;">Found ${data.findings.length} type(s). Redacted preview below — this is what the LLM will actually see:</p>
+                <div class="redacted-preview">${(data.redacted_text || "").slice(0, 400)}</div>
+            `;
+        } else {
+            privateBox.className = "scan-result-box safe";
+            privateBox.innerHTML = `
+                <div class="scan-result-title safe"><i class="fa-solid fa-circle-check"></i> No Private Data</div>
+                <p style="color:var(--text-secondary);font-size:0.85rem;">No emails, API keys, passwords, phones or card numbers detected. Safe to send to the model.</p>
+            `;
+        }
+    };
+
+    const renderPoisoning = (data) => {
+        poisonBox.classList.remove("empty");
+        const risk = (data.risk || "low").toLowerCase();
+        if (data.poisoning_detected) {
+            poisonBox.className = "scan-result-box unsafe";
+            const cats = (data.categories || []).map(c => `<span class="finding-badge">${c}</span>`).join("") || '<span class="finding-badge">suspicious pattern</span>';
+            poisonBox.innerHTML = `
+                <div class="scan-result-title unsafe"><i class="fa-solid fa-biohazard"></i> Poisoning Risk: ${risk.toUpperCase()}</div>
+                <div class="findings-list">${cats}</div>
+                <p style="color:var(--text-secondary);font-size:0.82rem;">${data.message || "Document contains hidden instructions that may hijack the assistant."}</p>
+                ${data.filename ? `<div class="redacted-preview"><i class="fa-solid fa-file"></i> ${data.filename}</div>` : ""}
+            `;
+        } else {
+            poisonBox.className = "scan-result-box safe";
+            poisonBox.innerHTML = `
+                <div class="scan-result-title safe"><i class="fa-solid fa-circle-check"></i> No Poisoning Detected</div>
+                <p style="color:var(--text-secondary);font-size:0.85rem;">${data.message || "No hidden instructions or override attempts found."}</p>
+                <span class="finding-badge" style="margin-top:0.4rem;">Risk: ${risk}</span>
+            `;
+        }
+    };
+
     const showUploadResult = (data) => {
         uploadResult.hidden = false;
         uploadResult.className = `security-result mt-1 ${data.safe ? "safe" : "unsafe"}`;
@@ -58,7 +101,13 @@ function initSecurityScanner() {
             ? "No private data or document-poisoning patterns were detected."
             : `Private data findings: ${data.private_data.length}\nPoisoning categories: ${data.document_scan.categories.join(", ") || "none"}`;
         uploadResult.textContent = `${data.safe ? "✓ SAFE" : "✕ UNSAFE"} — ${data.filename}\n${details}`;
+        // Also reflect in side-by-side boxes for clarity
+        if (data.private_data !== undefined) {
+            renderPrivateData({ detected: data.private_data.length > 0, findings: data.private_data.map(t => ({ type: t.type || t, count: t.count || 1 })), redacted_text: "" });
+        }
+        if (data.document_scan) renderPoisoning(data.document_scan);
     };
+
     document.getElementById("btn-upload-document").addEventListener("click", async () => {
         if (!fileInput.files.length) { showUploadResult({ error: "Choose a document first." }); return; }
         const formData = new FormData();
@@ -66,6 +115,8 @@ function initSecurityScanner() {
         uploadResult.hidden = false;
         uploadResult.className = "security-result mt-1";
         uploadResult.textContent = "Scanning document...";
+        privateBox.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Scanning...</p></div>';
+        poisonBox.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Scanning...</p></div>';
         try {
             const response = await fetch("/api/security/upload", { method: "POST", body: formData });
             showUploadResult(await response.json());
@@ -74,31 +125,110 @@ function initSecurityScanner() {
             showUploadResult({ error: "Upload failed. Check that the server is running." });
         }
     });
+
+    const setBtnLoading = (btn, loading) => {
+        btn.disabled = loading;
+        btn.style.opacity = loading ? "0.6" : "1";
+        btn.innerHTML = loading ? '<i class="fa-solid fa-spinner fa-spin"></i> Scanning...' : btn.dataset.label;
+    };
+    document.getElementById("btn-scan-private").dataset.label = document.getElementById("btn-scan-private").innerHTML;
+    document.getElementById("btn-scan-poisoning").dataset.label = document.getElementById("btn-scan-poisoning").innerHTML;
+
     document.getElementById("btn-scan-private").addEventListener("click", async () => {
-        if (!input.value.trim()) return;
-        const response = await fetch("/api/security/scan", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: input.value }) });
-        show(await response.json());
+        if (!input.value.trim()) { privateBox.innerHTML = '<div class="scan-result-box unsafe" style="min-height:auto;"><i class="fa-solid fa-circle-exclamation"></i> Paste text first.</div>'; return; }
+        const btn = document.getElementById("btn-scan-private");
+        setBtnLoading(btn, true);
+        try {
+            const response = await fetch("/api/security/scan", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: input.value }) });
+            renderPrivateData(await response.json());
+            loadAuditLogs();
+        } catch (e) {
+            privateBox.className = "scan-result-box unsafe";
+            privateBox.innerHTML = '<div class="scan-result-title unsafe">Scan failed</div><p>Could not reach server.</p>';
+        } finally { setBtnLoading(btn, false); }
     });
+
     document.getElementById("btn-scan-poisoning").addEventListener("click", async () => {
-        if (!input.value.trim()) return;
-        const response = await fetch("/api/security/scan-document", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: input.value, filename: "manual-input" }) });
-        show(await response.json());
+        if (!input.value.trim()) { poisonBox.innerHTML = '<div class="scan-result-box unsafe" style="min-height:auto;"><i class="fa-solid fa-circle-exclamation"></i> Paste text first.</div>'; return; }
+        const btn = document.getElementById("btn-scan-poisoning");
+        setBtnLoading(btn, true);
+        try {
+            const response = await fetch("/api/security/scan-document", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: input.value, filename: "manual-input" }) });
+            renderPoisoning(await response.json());
+            loadAuditLogs();
+        } catch (e) {
+            poisonBox.className = "scan-result-box unsafe";
+            poisonBox.innerHTML = '<div class="scan-result-title unsafe">Scan failed</div><p>Could not reach server.</p>';
+        } finally { setBtnLoading(btn, false); }
     });
+
     document.getElementById("btn-refresh-audit").addEventListener("click", loadAuditLogs);
     loadAuditLogs();
 }
 
 async function loadAuditLogs() {
     const target = document.getElementById("security-audit-log");
+    const badge = document.getElementById("audit-count-badge");
     if (!target) return;
     try {
         const response = await fetch("/api/audit/logs?limit=20");
         const data = await response.json();
-        target.textContent = data.logs.length
-            ? data.logs.map(log => `[${log.created_at}] ${log.event_type}\n${log.result}`).join("\n\n")
-            : "No security events recorded yet.";
+        if (badge) badge.textContent = `${data.logs.length} events`;
+        if (!data.logs.length) {
+            target.innerHTML = `<div class="audit-empty"><i class="fa-solid fa-shield-halved"></i><p>No security events yet</p><span>Scans and chat guardrail checks will appear here</span></div>`;
+            return;
+        }
+        const typeMeta = {
+            private_data_scan: { label: "Private Data", icon: "fa-fingerprint", cls: "type-private" },
+            document_poisoning_scan: { label: "Poisoning Scan", icon: "fa-biohazard", cls: "type-poison" },
+            document_upload_scan: { label: "Document Upload", icon: "fa-file-shield", cls: "type-upload" },
+            guardrail_chat: { label: "Guardrail Chat", icon: "fa-comments", cls: "type-chat" },
+        };
+        const safeFromResult = (resultStr) => {
+            try {
+                const r = JSON.parse(resultStr);
+                if (r.safe === true) return true;
+                if (r.safe === false) return false;
+                if (r.detected === true) return false;
+                if (r.poisoning_detected === true) return false;
+                return null;
+            } catch { return null; }
+        };
+        target.innerHTML = data.logs.map(log => {
+            const meta = typeMeta[log.event_type] || { label: log.event_type.replace(/_/g, " "), icon: "fa-shield-halved", cls: "type-default" };
+            let payload = {};
+            let result = {};
+            try { payload = JSON.parse(log.payload || "{}"); } catch {}
+            try { result = JSON.parse(log.result || "{}"); } catch {}
+            const safe = safeFromResult(log.result);
+            const badgeCls = safe === true ? "safe" : safe === false ? "unsafe" : "safe";
+            const badgeTxt = safe === true ? "SAFE" : safe === false ? "FLAGGED" : "LOGGED";
+            const preview = (() => {
+                if (result.output_text) return result.output_text.slice(0, 90);
+                if (result.message) return result.message.slice(0, 90);
+                if (result.findings) return `${result.findings.length} finding(s)`;
+                if (payload.length) return `${payload.length} chars scanned`;
+                if (payload.filename) return payload.filename;
+                return log.result.slice(0, 90);
+            })();
+            const timeStr = (log.created_at || "").slice(0, 19).replace("T", " ");
+            return `
+                <div class="audit-entry">
+                    <div class="audit-icon ${meta.cls}"><i class="fa-solid ${meta.icon}"></i></div>
+                    <div class="audit-content">
+                        <div class="audit-top">
+                            <span class="audit-type">${meta.label}</span>
+                            <span class="audit-badge ${badgeCls}">${badgeTxt}</span>
+                        </div>
+                        <div class="audit-time">${timeStr}</div>
+                        ${preview ? `<div class="audit-preview">${preview}</div>` : ""}
+                    </div>
+                </div>
+            `;
+        }).join("");
     } catch (error) {
-        target.textContent = "Unable to load audit history.";
+        target.innerHTML = `<div class="audit-empty"><i class="fa-solid fa-triangle-exclamation"></i><p>Unable to load audit history</p><span>Check server connection and try Refresh</span></div>`;
+        if (badge) badge.textContent = "—";
     }
 }
 
