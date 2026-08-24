@@ -295,8 +295,8 @@
                     </div>
                 </div>
 
-                <div class="mt-2" style="max-width: 720px; margin-left: auto; margin-right: auto;">
-                    <!-- Synthetic Expansion (Fine-tuning removed for serverless) -->
+                <div class="security-results-grid">
+                    <!-- Left: Synthetic Expansion -->
                     <div class="glass-card">
                         <div class="card-header">
                             <div class="card-title">
@@ -306,7 +306,7 @@
                             <span class="shield-badge badge-teal">Live</span>
                         </div>
                         
-                        <div class="card-body">
+                        <div class="card-body" style="display:flex;flex-direction:column;flex:1;">
                             <p class="body-desc">
                                 We utilize factual context perturbation and generative LLM hallucination modeling to automatically expand training resources. Expanding datasets increases model robustness to zero-day prompt injection styles.
                             </p>
@@ -324,23 +324,23 @@
                                 <span class="spinner-inline hidden" id="spinner-expand"><i class="fa-solid fa-circle-notch fa-spin"></i></span>
                                 <i class="fa-solid fa-arrows-spin"></i> Trigger Synthetic Generation
                             </button>
-                            <p style="color:var(--text-dim);font-size:0.78rem;margin-top:0.6rem;"><i class="fa-solid fa-circle-info"></i> Fine-tuning requires local PyTorch & GPU — run <code>python train.py</code> locally. The deployed model uses heuristic + live LLM checks.</p>
+                            <p style="color:var(--text-dim);font-size:0.78rem;margin-top:0.8rem;"><i class="fa-solid fa-circle-info"></i> Fine-tuning requires local PyTorch & GPU — run <code>python train.py</code> locally. The deployed model uses heuristic + live LLM checks.</p>
                         </div>
                     </div>
-                </div>
 
-                <!-- Training Logger Terminal -->
-                <div class="glass-card mt-2">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <i class="fa-solid fa-terminal text-green"></i>
-                            <h3>Training Log Console</h3>
+                    <!-- Right: Training Logger Terminal -->
+                    <div class="glass-card" style="display:flex;flex-direction:column;">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fa-solid fa-terminal text-green"></i>
+                                <h3>Training Log Console</h3>
+                            </div>
+                            <button id="btn-clear-console" class="btn btn-sm btn-dark"><i class="fa-solid fa-trash-can"></i> Clear Logs</button>
                         </div>
-                        <button id="btn-clear-console" class="btn btn-sm btn-dark"><i class="fa-solid fa-trash-can"></i> Clear Logs</button>
-                    </div>
-                    <div class="card-body console-body scroll-style" id="training-console">
-                        <div class="console-line text-dim">
-                            <span class="time">[System]</span> Terminal initialized. Awaiting training trigger...
+                        <div class="card-body console-body scroll-style" id="training-console" style="min-height:260px;flex:1;">
+                            <div class="console-line text-dim">
+                                <span class="time">[System]</span> Terminal initialized. Awaiting expansion trigger...
+                            </div>
                         </div>
                     </div>
                 </div>
