@@ -30,6 +30,9 @@ const PLAYGROUND_PRESETS = {
 
 // Initialize Dashboard
 document.addEventListener("DOMContentLoaded", () => {
+    if (window.mermaid) {
+        try { mermaid.initialize({ startOnLoad: false, theme: 'dark', themeVariables: { darkMode: true, background: 'transparent', primaryColor: '#1a8cff' } }); } catch(e) {}
+    }
     initNavigation();
     initPlayground();
     initSecurityScanner();
@@ -550,7 +553,20 @@ function initChatbot() {
         .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
     const renderMarkdown = (raw) => {
-        const text = escapeHtml(raw);
+        // Extract mermaid and code fences before escaping (keep raw code)
+        const mermaidBlocks = [];
+        let textWithPlaceholders = (raw || "").replace(/```mermaid\s*\n([\s\S]*?)```/g, (m, code) => {
+            const id = `__MERMAID_${mermaidBlocks.length}__`;
+            mermaidBlocks.push(code.trim());
+            return id;
+        });
+        const codeBlocks = [];
+        textWithPlaceholders = textWithPlaceholders.replace(/```(\w*)\n([\s\S]*?)```/g, (m, lang, code) => {
+            const id = `__CODE_${codeBlocks.length}__`;
+            codeBlocks.push({ lang: lang || "", code: code.trim() });
+            return id;
+        });
+        const text = escapeHtml(textWithPlaceholders);
         const lines = text.split(/\r?\n/);
         let html = "";
         let inList = false;
@@ -583,6 +599,21 @@ function initChatbot() {
 
         for (const rawLine of lines) {
             const trimmed = rawLine.trim();
+
+            if (trimmed.startsWith("__MERMAID_")) {
+                flushList(); flushTable();
+                const idx = parseInt(trimmed.replace("__MERMAID_", "").replace("__", ""), 10);
+                const code = mermaidBlocks[idx] || "";
+                html += `<div class="mermaid">${code}</div>`;
+                continue;
+            }
+            if (trimmed.startsWith("__CODE_")) {
+                flushList(); flushTable();
+                const idx = parseInt(trimmed.replace("__CODE_", "").replace("__", ""), 10);
+                const block = codeBlocks[idx] || { code: "" };
+                html += `<pre><code>${escapeHtml(block.code)}</code></pre>`;
+                continue;
+            }
 
             if (trimmed.startsWith("|") && trimmed.endsWith("|")) {
                 flushList();
@@ -630,6 +661,10 @@ function initChatbot() {
         `;
         chatHistory.appendChild(botMsg);
         chatHistory.scrollTop = chatHistory.scrollHeight;
+        // Render mermaid diagrams if any
+        if (window.mermaid) {
+            try { mermaid.init(undefined, botMsg.querySelectorAll('.mermaid')); } catch(e) { console.warn('mermaid init failed', e); }
+        }
     };
     
     btnSend.addEventListener("click", sendMessage);
