@@ -31,7 +31,7 @@ const PLAYGROUND_PRESETS = {
 // Initialize Dashboard
 document.addEventListener("DOMContentLoaded", () => {
     if (window.mermaid) {
-        try { mermaid.initialize({ startOnLoad: false, theme: 'dark', themeVariables: { darkMode: true, background: 'transparent', primaryColor: '#1a8cff' } }); } catch(e) {}
+        try { mermaid.initialize({ startOnLoad: false, theme: 'dark', themeVariables: { darkMode: true, background: '#080B11', primaryColor: '#1a8cff', primaryTextColor: '#F1F5F9', lineColor: '#94A3B8', secondaryColor: '#1e293b' } }); } catch(e) {}
     }
     initNavigation();
     initPlayground();
@@ -661,9 +661,15 @@ function initChatbot() {
         `;
         chatHistory.appendChild(botMsg);
         chatHistory.scrollTop = chatHistory.scrollHeight;
-        // Render mermaid diagrams if any
+        // Render mermaid diagrams if any (v10 uses mermaid.run, fallback to init)
         if (window.mermaid) {
-            try { mermaid.init(undefined, botMsg.querySelectorAll('.mermaid')); } catch(e) { console.warn('mermaid init failed', e); }
+            try {
+                if (typeof mermaid.run === 'function') {
+                    mermaid.run({ querySelector: '.mermaid', nodes: botMsg.querySelectorAll('.mermaid') });
+                } else {
+                    mermaid.init(undefined, botMsg.querySelectorAll('.mermaid'));
+                }
+            } catch(e) { console.warn('mermaid render failed', e); }
         }
     };
     

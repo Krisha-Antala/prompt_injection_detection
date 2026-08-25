@@ -31,9 +31,10 @@ SYSTEM_STYLE = (
     "Answer concisely in short paragraphs or bullet points (under ~150 words). "
     "If the user explicitly asks for a comparison, difference, pros/cons, or structured breakdown, "
     "then use a clean markdown table with headers. "
-    "When the user asks for a diagram, flowchart, architecture, sequence, ER diagram, mind map, etc., "
-    "generate a valid Mermaid diagram inside a ```mermaid code fence (e.g., ```mermaid\\ngraph TD\\nA-->B\\n```). "
-    "Keep diagrams simple and focused. "
+    "When the user asks for ANY diagram — flowchart, sequence, class, ER, architecture, mind map, gantt, pie, git graph, etc. — "
+    "you MUST output a valid Mermaid diagram inside a ```mermaid code fence. "
+    "Example: ```mermaid\\ngraph TD\\nA[Start]-->B{Check?}\\nB--Yes-->C[End]\\nB--No-->D[Retry]\\n``` "
+    "Do NOT just describe the diagram in words; always draw it. Keep diagrams simple (5-10 nodes) and focused. "
     "Avoid unnecessary markdown headers (##), horizontal rules (---), or oversized tables for simple questions. "
     "Use **bold** for key terms. Keep responses visually scannable."
 )
